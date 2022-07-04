@@ -1,0 +1,37 @@
+.row-content {
+    width: 100%;
+    display: flex;
+    /*border: 5px solid deeppink;*/
+}
+
+.content-name {
+    width: 70%;
+    margin: auto;
+}
+
+.content-action {
+    alignItems: end;
+    margin: auto;
+    marginRight: inherit;
+    /*border: 2px solid blue;*/
+}
+.img-style {
+    width: 16px;
+    height: 16px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 10px;
+}
+
+.btn-style{
+    border-radius: 7px;
+}
+.btn-style:hover{
+    background: orangered;
+}
+.img-btn-style {
+    width: 16px;
+    height: 16px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
