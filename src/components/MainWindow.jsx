@@ -4,15 +4,9 @@ import hand from './img/hand.png';
 import btnCross from './img/btn-cross.png'
 import RowTable from "./RowTable";
 
-const MainWindow = () => {
-    const [items, setItemsTable] = useState([
-        {id: 1, userName: "Ilya Gorbachev", isHand: true, status: "student"},
-        {id: 2, userName: "Tomas Andersan", isHand: true, status: "header"},
-        {id: 3, userName: "Romigo Panamera", isHand: true, status: "student"},
-    ]);
-
-    // Current logging consumer
-    const [curUser, setCurUser] = useState(items[1])
+const MainWindow = ({stateCurUser, items}) => {
+    // State current logging consumer
+    const [curUser, setCurUser] = stateCurUser
 
     // Status current logging consumer
     const [curStatus, setCurStatus] = useState(function () {
