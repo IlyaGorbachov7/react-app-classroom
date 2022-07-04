@@ -8,7 +8,7 @@ const MainWindow = () => {
     const [items, setItemsTable] = useState([
         {id: 1, userName: "Ilya Gorbachev", isHand: true, status: "student"},
         {id: 2, userName: "Tomas Andersan", isHand: true, status: "header"},
-        {id: 3, userName: "Romigo Panamera", isHand: true, status: "student"}
+        {id: 3, userName: "Romigo Panamera", isHand: true, status: "student"},
     ]);
 
     // Current logging consumer
@@ -22,7 +22,6 @@ const MainWindow = () => {
             return "visible"
         }
     })
-
     /**
      * Main handler event cliked on the button "Rise Hand up"
      */
