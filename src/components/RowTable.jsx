@@ -1,17 +1,21 @@
 import React from 'react';
 import btnCross from "./img/btn-cross.png";
 import hand from "./img/hand.png";
+import "./csses/RowTable.css"
 
-const RowTable = ({item, status, ...props}) => {
+const RowTable = ({item}) => {
 
     return (
-        <div  style={{width:'100%', display:"flex", border :"2px solid"}}>
-            <div style={{float: "left"}}>
+        <div className="row-content">
+            <div className="content-name">
                 {item.userName}
             </div>
-            <div style={{visibility:status, alignItems:"end", margin:"auto", marginRight:"inherit", border:"2px solid blue"}}>
-                <button type="button"><img src={btnCross} className="img-btn-style"/></button>
-                <img src={hand} alt="" className="img-style"/>
+            <div className="content-action">
+                <button className="btn-style" type="button">
+                    <img src={btnCross} className="img-btn-style"/>
+                </button>
+
+                <img src={hand} className="img-style"/>
             </div>
         </div>
     );
