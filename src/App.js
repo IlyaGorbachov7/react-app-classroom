@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import Login from "./components/Login";
+import MainWindow from "./components/MainWindow";
 
 function App() {
     const state = useState(0)
@@ -13,7 +14,7 @@ function App() {
 
     return (
         <div className="App">
-            <Login/>
+            <MainWindow/>
         </div>
     );
 

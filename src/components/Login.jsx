@@ -6,11 +6,11 @@ function Login() {
         status: false
     });
 
-
     const funSubmit = function (event) {
         event.preventDefault()
         console.log(loginData)
     }
+
     return (
         <div className="form-popup" id="myForm">
             <form  className="form-container">
@@ -18,13 +18,12 @@ function Login() {
 
                 <label htmlFor="email"><b>Email</b></label>
                 <input type="text" placeholder="Name Lastname"
-                       name="email"
                        value={loginData.name}
                        onChange={event => setLoginData({...loginData , name: event.target.value})}
                       required/>
 
                 <label>
-                    <input type="checkbox" name="subscribe"
+                    <input type="checkbox"
                     checked={loginData.status}
                     onChange={event => setLoginData({...loginData, status: event.target.checked})}/> You are the creator ?
                 </label>
