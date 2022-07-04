@@ -3,18 +3,19 @@ import Login from "./components/Login";
 import MainWindow from "./components/MainWindow";
 
 function App() {
-    const state = useState(0)
-    const [stat, setStat] = useState(0);
-    console.log(setStat)
-    function incrFun() {
-        count++;
-        console.log(count)
-        setStat(stat + 1)
-    }
+    // Current logging consumer
+    const [items, setItemsTable] = useState([
+        {id: 1, userName: "Ilya Gorbachev", isHand: true, status: "student"},
+        {id: 2, userName: "Tomas Andersan", isHand: true, status: "header"},
+        {id: 3, userName: "Romigo Panamera", isHand: true, status: "student"},
+    ]);
+
+    const stateCurUser = useState(items[1])
 
     return (
         <div className="App">
-            <MainWindow/>
+            <MainWindow stateCurUser={stateCurUser} items={items}/>
+
         </div>
     );
 
