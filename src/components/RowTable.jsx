@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, {useState} from 'react';
 import btnCross from "./img/btn-cross.png";
 import hand from "./img/hand.png";
 import "./csses/RowTable.css"
