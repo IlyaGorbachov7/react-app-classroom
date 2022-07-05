@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import './csses/login.css'
 
-function Login({stateCurUser, stateItems}) {
-    const [curUser, setCurUser] = stateCurUser
-    const [items, setItems] = stateItems
-
+/**
+ *
+ */
+function Login({create}) {
     const [loginData, setLoginData] = useState({
         name: "",
         status: false
@@ -16,11 +16,13 @@ function Login({stateCurUser, stateItems}) {
      */
     const funSubmit = function (event) {
         event.preventDefault()
-        console.log(loginData)
 
-        // Code send request on the server
-        setCurUser({...curUser, userName: loginData.name, status: loginData.status})
-        setItems([...items, curUser])
+        create({
+            id: Date.now(),
+            userName: loginData.name,
+            status: loginData.status,
+            isHand: false
+        })
     }
 
     return (
