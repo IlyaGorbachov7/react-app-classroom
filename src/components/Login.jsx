@@ -39,8 +39,8 @@ function Login({create}) {
                 <label>
                     <input type="checkbox"
                            checked={loginData.status}
-                           onChange={event => setLoginData({...loginData, status: event.target.checked})}/> You are the
-                    creator ?
+                           onChange={event => setLoginData({...loginData, status: event.target.checked})}/>
+                    You are the creator ?
                 </label>
 
                 <button type="button" className="btn" onClick={funSubmit}>Login</button>

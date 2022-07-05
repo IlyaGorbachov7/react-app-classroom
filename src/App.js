@@ -10,11 +10,11 @@ function App() {
         {id: 3, userName: "Romigo Panamera", isHand: true, status: false},
     ]);
 
-
     // make State by default - is current logging user
     const stateCurUser = useState({id: -1, userName: "", isHand: false, status: false})
 
     const createUser = (newUser) => {
+        console.log(newUser)
         stateCurUser[1](newUser)
         stateItems[1]([...stateItems[0], newUser])
     }
@@ -23,11 +23,25 @@ function App() {
         stateItems[1](stateItems[0].filter(item => item.id !== user.id)); // Это не удаляет, оно лишь фильтрует и создает новый список
     }
 
+    const actionHand = (curUser) => {
+        stateCurUser[1]({...curUser, isHand: curUser !== true})
+        stateItems[0].find(value => {
+            if (value.id === curUser.id) {
+                value.isHand = curUser !== true
+            }
+        })
+    }
     return (
         <div className="App">
             <Login create={createUser}/>
-            <MainWindow stateCurUser={stateCurUser} items={stateItems[0]} remove={removeUser}/>
-
+            {stateItems[0].length !== 0
+                ?
+                <MainWindow curUser={stateCurUser[0]} items={stateItems[0]} remove={removeUser} action={actionHand}/>
+                :
+                <h1 style={{textAlign: "center"}}>
+                    Элементов нет !
+                </h1>
+            }
         </div>
     );
 

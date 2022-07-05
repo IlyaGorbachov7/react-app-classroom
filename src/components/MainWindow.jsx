@@ -4,32 +4,21 @@ import hand from './img/hand.png';
 import btnCross from './img/btn-cross.png'
 import RowTable from "./RowTable";
 
-const MainWindow = ({stateCurUser, items}) => {
+const MainWindow = ({curUser, items, remove, action}) => {
     // State current logging consumer
-    const [curUser, setCurUser] = stateCurUser
 
-    // Status current logging consumer
-    const [curStatus, setCurStatus] = useState(function () {
-        if (curUser.status === "student") {
-            return "hidden"
-        } else {
-            return "visible"
-        }
-    })
     /**
      * Main handler event cliked on the button "Rise Hand up"
      */
     function handlerRiseHand(e) {
         e.preventDefault()
         if (curUser.isHand === true) {
-            setCurUser({...curUser, isHand: false})
-            document.getElementById("idActionHand").innerHTML = "Dawn hand"
-        } else {
-            setCurUser({...curUser, isHand: true})
             document.getElementById("idActionHand").innerHTML = "Rise hand up"
+        } else {
+            document.getElementById("idActionHand").innerHTML = "Dawn hand"
         }
+        action(curUser)
 
-        console.log(curUser)
         //... Code by sending request on the server
     }
 
@@ -38,9 +27,8 @@ const MainWindow = ({stateCurUser, items}) => {
      */
     function handlerLogout(e) {
         e.preventDefault()
-        console.log("logout")
 
-        //... Code by sending request on the server
+        //... Code for sending request on the server
     }
 
     // Close the dropdown if the user clicks outside of it
@@ -89,7 +77,9 @@ const MainWindow = ({stateCurUser, items}) => {
             </div>
 
             <div className="table-style">
-                {items.map(value => <RowTable item={value} key={value.id} statusCurItem={curStatus}/>)}
+                {items.map(item =>
+                    <RowTable item={item} key={item.id} remove={remove} statusCurUser={curUser.status}/>
+                )}
             </div>
         </div>
     );
