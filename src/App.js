@@ -12,17 +12,21 @@ function App() {
 
 
     // make State by default - is current logging user
-    const stateCurUser = useState({id: Date.now(), userName: "", isHand: false, status: false})
+    const stateCurUser = useState({id: -1, userName: "", isHand: false, status: false})
 
     const createUser = (newUser) => {
-        console.log(newUser)
         stateCurUser[1](newUser)
         stateItems[1]([...stateItems[0], newUser])
     }
+
+    const removeUser = (user) => {
+        stateItems[1](stateItems[0].filter(item => item.id !== user.id)); // Это не удаляет, оно лишь фильтрует и создает новый список
+    }
+
     return (
         <div className="App">
             <Login create={createUser}/>
-            <MainWindow stateCurUser={stateCurUser} items={stateItems[0]}/>
+            <MainWindow stateCurUser={stateCurUser} items={stateItems[0]} remove={removeUser}/>
 
         </div>
     );
