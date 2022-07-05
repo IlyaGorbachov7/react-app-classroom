@@ -10,30 +10,38 @@ function App() {
         {id: 3, userName: "Romigo Panamera", isHand: true, status: false},
     ]);
 
-    // make State by default - is current logging user
+    // makes State by default - is current user
     const stateCurUser = useState({id: -1, userName: "", isHand: false, status: false})
 
     const createUser = (newUser) => {
-        console.log(newUser)
         stateCurUser[1](newUser)
         stateItems[1]([...stateItems[0], newUser])
+
+       // send request for create user
     }
 
     const removeUser = (user) => {
         stateItems[1](stateItems[0].filter(item => item.id !== user.id)); // Это не удаляет, оно лишь фильтрует и создает новый список
+
+        // send request for remove user
     }
 
     const actionHand = (curUser) => {
-        stateCurUser[1]({...curUser, isHand: curUser !== true})
-        stateItems[0].find(value => {
-            if (value.id === curUser.id) {
-                value.isHand = curUser !== true
-            }
-        })
+        stateCurUser[1]({...curUser, isHand: curUser.isHand !== true})
+        console.log(stateCurUser[0])
+        //
+        // stateItems[0].find(value => {
+        //     if (value.id === curUser.id) {
+        //         value.isHand = curUser.isHand
+        //     }
+        // })
+
+        // send request for changing hand action
     }
     return (
         <div className="App">
             <Login create={createUser}/>
+
             {stateItems[0].length !== 0
                 ?
                 <MainWindow curUser={stateCurUser[0]} items={stateItems[0]} remove={removeUser} action={actionHand}/>
