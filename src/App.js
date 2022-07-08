@@ -1,59 +1,39 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Login from "./components/Login";
+import {Route, BrowserRouter} from "react-router-dom";
+import {Navigate, Routes} from "react-router";
+import ErrorPage from "./components/Error";
 import MainWindow from "./components/MainWindow";
 
 function App() {
-    // Current logging consumer
-    const stateItems = useState([
-        {id: 1, userName: "Ilya Gorbachev", isHand: true, status: false},
-        {id: 2, userName: "Tomas Andersan", isHand: true, status: true},
-        {id: 3, userName: "Romigo Panamera", isHand: true, status: false},
-    ]);
+    const [isRegistered, setIsRedirect] = useState(false)
 
-    // makes State by default - is current user
-    const stateCurUser = useState({id: -1, userName: "", isHand: false, status: false})
+    const [curUser, setCurUser] = useState({
+        id: 0,
+        name: "",
+        status: false,
+        isHand: false
+    })
 
-    const createUser = (newUser) => {
-        stateCurUser[1](newUser)
-        stateItems[1]([...stateItems[0], newUser])
-
-       // send request for create user
+    function setUser(user) {
+        setCurUser(user)
     }
 
-    const removeUser = (user) => {
-        stateItems[1](stateItems[0].filter(item => item.id !== user.id)); // Это не удаляет, оно лишь фильтрует и создает новый список
 
-        // send request for remove user
-    }
-
-    const actionHand = (curUser) => {
-        stateCurUser[1]({...curUser, isHand: curUser.isHand !== true})
-        console.log(stateCurUser[0])
-        //
-        // stateItems[0].find(value => {
-        //     if (value.id === curUser.id) {
-        //         value.isHand = curUser.isHand
-        //     }
-        // })
-
-        // send request for changing hand action
-    }
     return (
-        <div className="App">
-            <Login create={createUser}/>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/login"
+                       element={<Login setUser={setUser}/>}/>
 
-            {stateItems[0].length !== 0
-                ?
-                <MainWindow curUser={stateCurUser[0]} items={stateItems[0]} remove={removeUser} action={actionHand}/>
-                :
-                <h1 style={{textAlign: "center"}}>
-                    Элементов нет !
-                </h1>
-            }
-        </div>
+                <Route path="/classroom" element={<MainWindow curUser={curUser}/>}/>
+
+                <Route path="/" element={<Navigate to={'/login'}/>}/>
+                <Route path="*" element={<ErrorPage/>}/>
+            </Routes>
+        </BrowserRouter>
     );
 
 }
-
 
 export default App;
