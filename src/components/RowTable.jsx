@@ -2,19 +2,24 @@ import React, {useState} from 'react';
 import btnCross from "./img/btn-cross.png";
 import hand from "./img/hand.png";
 import "./csses/RowTable.css"
+import ClassRoomService from "../API/ClassRoomService";
 
-const RowTable = ({item, statusCurUser,remove}) => {
+const RowTable = ({item, statusCurUser, loadUsers}) => {
 
-    function btnDeleteItem(e) {
+    async function btnDeleteItem(e) {
         e.preventDefault()
-        console.log(item.id)
-        remove(item)
+        try {
+            let statusCode = await ClassRoomService.removeById(item.id)
+            loadUsers()
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     return (
         <div className="row-content">
             <div className="content-name">
-                {item.userName}
+                {item.name}
             </div>
             <div className="content-action">
 

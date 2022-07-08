@@ -1,34 +1,56 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import "./csses/MainWIndow.css";
-import hand from './img/hand.png';
-import btnCross from './img/btn-cross.png'
 import RowTable from "./RowTable";
+import ClassRoomService from "../API/ClassRoomService";
 
-const MainWindow = ({curUser, items, remove, action}) => {
-    // State current logging consumer
+const MainWindow = ({curUser}) => {
+    const [users, setUsers] = useState([])
 
-    /**
-     * Main handler event cliked on the button "Rise Hand up"
-     */
-    function handlerRiseHand(e) {
-        e.preventDefault()
-        if (curUser.isHand === true) {
-            document.getElementById("idActionHand").innerHTML = "Rise hand up"
-        } else {
-            document.getElementById("idActionHand").innerHTML = "Dawn hand"
+    let bul = React.useRef(false)
+    useEffect(() => {
+        if (bul === true) {
+            return;
         }
-        action(curUser)
+        loadUsers()
+        bul = true
+    }, [])
 
-        //... Code by sending request on the server
+    async function loadUsers() {
+        let persons = await ClassRoomService.getAll();
+        setUsers(persons)
     }
 
-    /**
-     * Main  handler event clicked on the button "Logout"
-     */
-    function handlerLogout(e) {
-        e.preventDefault()
+    async function changeAction() {
+        try {
+            // Делаем запрос на сервер, Делаем предварительное изминение isHand
+            let statusCode = await ClassRoomService.riseHand(curUser.id, curUser.isHand === false);
+            if (statusCode === 200) {// если все ОК
+                // Тогда ЯВНО изменяем состояние isHand у текущего объекта
+                curUser.isHand = curUser.isHand === false
+                if (curUser.isHand === true) {// if OK, then changed text inside html
+                    document.getElementById("idActionHand").innerHTML = "Rise hand up"
+                } else document.getElementById("idActionHand").innerHTML = "Dawn hand"
 
-        //... Code for sending request on the server
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    async function handlerRiseHand(e) {
+        e.preventDefault()
+        await changeAction()
+        loadUsers();
+    }
+
+    async function handlerLogout(e) {
+        e.preventDefault()
+        try {
+            await ClassRoomService.removeById(curUser.id)
+            loadUsers()
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     // Close the dropdown if the user clicks outside of it
@@ -46,21 +68,15 @@ const MainWindow = ({curUser, items, remove, action}) => {
         }
     }
 
-    function btnViewAction(e) {
-        e.preventDefault()
-        document.getElementById("myDropdownAction").classList.toggle("show");
-    }
-
-    function btnViewUser(e) {
-        e.preventDefault()
-        document.getElementById("myDropdownUser").classList.toggle("show");
-    }
-
     return (
         <div>
             <div className="container">
                 <div className="dropdown-action">
-                    <button onClick={btnViewAction} className="dropbtn">Actions</button>
+                    <button onClick={(e) => {
+                        e.preventDefault()
+                        document.getElementById("myDropdownAction").classList.toggle("show");
+                    }} className="dropbtn">Actions
+                    </button>
                     <div id="myDropdownAction" className="dropdown-content"
                          onClick={handlerRiseHand}>
                         <div id="idActionHand">Raise hand up</div>
@@ -68,7 +84,10 @@ const MainWindow = ({curUser, items, remove, action}) => {
                 </div>
 
                 <div className="dropdown-user">
-                    <button onClick={btnViewUser} className="dropbtn">{curUser.userName}</button>
+                    <button onClick={(e) => {
+                        e.preventDefault()
+                        document.getElementById("myDropdownUser").classList.toggle("show");
+                    }} className="dropbtn">{curUser.name}</button>
                     <div id="myDropdownUser" className="dropdown-content"
                          onClick={handlerLogout}>
                         <div id="idLogout">Logout</div>
@@ -77,10 +96,12 @@ const MainWindow = ({curUser, items, remove, action}) => {
             </div>
 
             <div className="table-style">
-                {items.map(item =>
-                    <RowTable item={item} key={item.id} remove={remove} statusCurUser={curUser.status}/>
+                {users.map(user =>
+                    <RowTable item={user} statusCurUser={curUser.status}
+                              loadUsers={loadUsers} key={user.id}/>
                 )}
             </div>
+
         </div>
     );
 };
