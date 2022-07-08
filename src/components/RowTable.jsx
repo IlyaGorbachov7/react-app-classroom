@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import btnCross from "./img/btn-cross.png";
-import hand from "./img/hand.png";
+import imgHand from "./img/hand.png";
 import "./csses/RowTable.css"
 import ClassRoomService from "../API/ClassRoomService";
 
@@ -29,8 +29,8 @@ const RowTable = ({item, statusCurUser, loadUsers}) => {
                          onClick={btnDeleteItem}/>
                 </button>
 
-                <img src={hand} className="img-style"
-                     style={{visibility: (item.isHand === true) ? "visible" : "hidden"}}/>
+                <img src={imgHand} className="img-style"
+                     style={{visibility: (item.hand === true) ? "visible" : "hidden"}}/>
             </div>
         </div>
     );

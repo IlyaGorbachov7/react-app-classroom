@@ -22,16 +22,16 @@ const MainWindow = ({curUser}) => {
 
     async function changeAction() {
         try {
-            // Делаем запрос на сервер, Делаем предварительное изминение isHand
-            let statusCode = await ClassRoomService.riseHand(curUser.id, curUser.isHand === false);
+            curUser.hand = curUser.hand === false
+            let statusCode = await ClassRoomService.riseHand(curUser);
+            console.log(statusCode)
             if (statusCode === 200) {// если все ОК
-                // Тогда ЯВНО изменяем состояние isHand у текущего объекта
-                curUser.isHand = curUser.isHand === false
-                if (curUser.isHand === true) {// if OK, then changed text inside html
+                if (curUser.hand === true) {// if OK, then changed text inside html
                     document.getElementById("idActionHand").innerHTML = "Rise hand up"
                 } else document.getElementById("idActionHand").innerHTML = "Dawn hand"
 
-            }
+
+            } else curUser.hand = curUser.hand === false // возвращает обратно
         } catch (e) {
             console.log(e)
         }
@@ -40,14 +40,14 @@ const MainWindow = ({curUser}) => {
     async function handlerRiseHand(e) {
         e.preventDefault()
         await changeAction()
-        loadUsers();
+        await loadUsers();
     }
 
     async function handlerLogout(e) {
         e.preventDefault()
         try {
             await ClassRoomService.removeById(curUser.id)
-            loadUsers()
+            await loadUsers()
         } catch (e) {
             console.log(e)
         }

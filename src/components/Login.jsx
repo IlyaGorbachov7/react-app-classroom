@@ -3,9 +3,7 @@ import './csses/login.css'
 import {useNavigate} from "react-router";
 import ClassRoomService from "../API/ClassRoomService";
 
-/**
- *
- */
+
 function Login({setUser}) {
     const [loginData, setLoginData] = useState({
         name: "",
@@ -26,20 +24,21 @@ function Login({setUser}) {
                 id : Date.now(),
                 name: loginData.name,
                 status: loginData.status,
+                hand : false
             })
             navigate('/classroom')
             return
         }
         try { // else if is not creator
             const response = await ClassRoomService.createUser(loginData.name)
-
-            if (response.status === 201) { // is created !
+            console.log(response.status)
+            if (response.status === 200) { // is created !
                 setUser({
                     // id должно быть взято из сервера !
                     id: response.data.id,
                     name: loginData.name,
                     status: loginData.status,
-                    isHand : false
+                    hand : false
                 })
                 setMsgError(false)
                 navigate('/classroom')

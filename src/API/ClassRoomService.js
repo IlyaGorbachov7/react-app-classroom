@@ -6,7 +6,7 @@ import remoteServer from "./RemoteServer";
 export default class ClassRoomService {
 
     static async getAll() {
-        let response = (await remoteServer.get(""));
+        let response = (await remoteServer.get("users/"));
         return response.data;
     }
 
@@ -23,8 +23,10 @@ export default class ClassRoomService {
     }
 
 
-    static async riseHand(id, bulValue) {
-        let response = (await remoteServer.put("users/", {id: id, isHand: bulValue}));
+    static async riseHand(user) {
+        let response = (await remoteServer.put("users/", user,{
+
+        }));
         return response.status;
     }
 
