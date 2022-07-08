@@ -1,27 +1,31 @@
 import remoteServer from "./RemoteServer";
 
+/**
+ * https://highload.today/metody-http-zaprosov/
+ */
 export default class ClassRoomService {
 
-    /**
-     * Get запрос
-     */
     static async getAll() {
-        return (await remoteServer.get("users")).data;
+        let response = (await remoteServer.get(""));
+        return response.data;
     }
 
-    /**
-     * Post request должен быть !
-     */
+
     static async createUser(name) {
-        let response = (await remoteServer.post("users", {name: name}));
+        let response = (await remoteServer.post("users/", {name: name}));
+        // НУжно получить ОТВЕТ id созданного пользователя, так как id генерируется на сервере
+        return response;
+    }
+
+    static async removeById(id) {
+        let response = (await remoteServer.delete("users/" + id));
         return response.status;
     }
 
-    /**
-     * Remove request должен быть !
-     */
-    static async removeById(id) {
-        return (await remoteServer.delete('users/' + id)).status;
+
+    static async riseHand(id, bulValue) {
+        let response = (await remoteServer.put("users/", {id: id, isHand: bulValue}));
+        return response.status;
     }
 
 }
