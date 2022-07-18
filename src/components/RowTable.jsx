@@ -1,16 +1,16 @@
-import React, {useState} from 'react';
+import React from 'react';
 import btnCross from "./img/btn-cross.png";
 import imgHand from "./img/hand.png";
 import "./csses/RowTable.css"
 import ClassRoomService from "../API/ClassRoomService";
 
-const RowTable = ({item, statusCurUser, loadUsers}) => {
+const RowTable = ({item, statusCurUser, sendQueryToGetList}) => {
 
     async function btnDeleteItem(e) {
         e.preventDefault()
         try {
-            let statusCode = await ClassRoomService.removeById(item.id)
-            loadUsers()
+            await ClassRoomService.removeById(item.id)
+            // sendQueryToGetList()
         } catch (e) {
             console.log(e)
         }
@@ -25,11 +25,11 @@ const RowTable = ({item, statusCurUser, loadUsers}) => {
 
                 <button className="btn-style" type="button"
                         style={{visibility: ((statusCurUser === true) ? "visible" : "hidden")}}>
-                    <img src={btnCross} className="img-btn-style"
+                    <img src={btnCross} className="img-btn-style" alt="image btn"
                          onClick={btnDeleteItem}/>
                 </button>
 
-                <img src={imgHand} className="img-style"
+                <img src={imgHand} className="img-style" alt="image hand"
                      style={{visibility: (item.hand === true) ? "visible" : "hidden"}}/>
             </div>
         </div>
