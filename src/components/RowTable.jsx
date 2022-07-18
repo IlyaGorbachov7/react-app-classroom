@@ -10,7 +10,7 @@ const RowTable = ({item, statusCurUser, sendQueryToGetList}) => {
         e.preventDefault()
         try {
             await ClassRoomService.removeById(item.id)
-            // sendQueryToGetList()
+            sendQueryToGetList()
         } catch (e) {
             console.log(e)
         }

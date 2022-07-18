@@ -29,51 +29,19 @@ const MainWindow = ({curUser}) => {
         sendQueryToGetList();
     }
 
-    function sendQueryToGetList() {
-        stompClient.current.send("/app/users")
-    }
-
     const onSubscribe = (payload) => {
         let payloadData = JSON.parse(payload.body);
-        console.log(payload)
-        console.log(payloadData)
-        setUsers(payloadData.data)
-        console.log(payloadData.operation)
-        // if (payloadData.operation !== undefined) {
-        //
-        //     switch (payloadData.operation) {
-        //         case "CREATE":
-        //             console.log("create =>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        //             setUsers(payloadData.data)
-        //             console.log("CREATE")
-        //             break;
-        //         case "UPDATE":
-        //             console.log("UPDATE =<>>>>>>>>>")
-        //             console.log(payloadData.data)
-        //             console.log(users)
-        //             let userFind = users.find(user => user.id === payloadData.data.id);
-        //             userFind.name = payloadData.data.name;
-        //             userFind.name = payloadData.data.hand;
-        //             setUsers([...users]);
-        //             console.log("UPDATE")
-        //             break;
-        //         case "DELETE":
-        //             let list = users.filter(user => user.id !== payloadData.data.id)
-        //             setUsers(list);
-        //             console.log("DELETE")
-        //             break;
-        //         default:
-        //             break;
-        //     }
-        // } else {
-        // }
-
+        setUsers(payloadData);
     }
 
     function disconnect() {
         if (stompClient !== null) {
             stompClient.current.disconnect();
         }
+    }
+
+    function sendQueryToGetList() {
+        stompClient.current.send("/app/users")
     }
 
     useEffect(() => {
@@ -83,12 +51,11 @@ const MainWindow = ({curUser}) => {
         connection();
     }, [])
 
-    /*  useEffect(() => {
-          if (connect === true) {
-              sendQueryToGetList();
-          }
-      }, [connect])
-  */
+    useEffect(() => {
+        if (connect === true) {
+            sendQueryToGetList();
+        }
+    }, [connect])
 
     async function changeAction() {
         try {
@@ -110,14 +77,14 @@ const MainWindow = ({curUser}) => {
     async function handlerRiseHand(e) {
         e.preventDefault()
         await changeAction()
-        // sendQueryToGetList()
+        sendQueryToGetList()
     }
 
     async function handlerLogout(e) {
         e.preventDefault()
         try {
             await ClassRoomService.removeById(curUser.id)
-            // sendQueryToGetList();
+            sendQueryToGetList();
             disconnect()
             navigate('/login');
         } catch (e) {
@@ -167,7 +134,10 @@ const MainWindow = ({curUser}) => {
             </div>
 
             <div className="table-style">
-                {users.map(user => <RowTable item={user} statusCurUser={curUser.status} sendQueryToGetList={sendQueryToGetList} key={user.id}/>)}
+                {users.map(user =>
+                    <RowTable item={user} statusCurUser={curUser.status}
+                              loadUsers={sendQueryToGetList} key={user.id}/>
+                )}
             </div>
 
         </div>
