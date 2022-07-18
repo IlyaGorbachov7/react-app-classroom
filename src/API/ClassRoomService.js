@@ -11,9 +11,10 @@ export default class ClassRoomService {
     }
 
 
-    static async createUser(name) {
-        let response = (await remoteServer.post("users/", {name: name}));
-        // НУжно получить ОТВЕТ id созданного пользователя, так как id генерируется на сервере
+    static async createUser(user) {
+        console.log("CRETED USER ")
+        let response = (await remoteServer.post("users/", user));
+        console.log("---------------------------------> next")
         return response;
     }
 
@@ -24,9 +25,7 @@ export default class ClassRoomService {
 
 
     static async riseHand(user) {
-        let response = (await remoteServer.put("users/", user,{
-
-        }));
+        let response = (await remoteServer.put("users/", user));
         return response.status;
     }
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Login from "./components/Login";
 import {Route, BrowserRouter} from "react-router-dom";
 import {Navigate, Routes} from "react-router";
@@ -6,7 +6,6 @@ import ErrorPage from "./components/Error";
 import MainWindow from "./components/MainWindow";
 
 function App() {
-    const [isRegistered, setIsRedirect] = useState(false)
 
     const [curUser, setCurUser] = useState({
         id: 0,
@@ -14,6 +13,7 @@ function App() {
         status: false,
         isHand: false
     })
+
 
     function setUser(user) {
         setCurUser(user)
