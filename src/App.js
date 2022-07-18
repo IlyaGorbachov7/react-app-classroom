@@ -1,24 +1,39 @@
 import React, {useState} from 'react';
 import Login from "./components/Login";
+import {Route, BrowserRouter} from "react-router-dom";
+import {Navigate, Routes} from "react-router";
+import ErrorPage from "./components/Error";
+import MainWindow from "./components/MainWindow";
 
 function App() {
-    const state = useState(0)
-    const [stat, setStat] = useState(0);
-    console.log(setStat)
-    function incrFun() {
-        count++;
-        console.log(count)
-        setStat(stat + 1)
+
+    const [curUser, setCurUser] = useState({
+        id: 0,
+        name: "",
+        status: false,
+        isHand: false
+    })
+
+
+    function setUser(user) {
+        setCurUser(user)
     }
 
+
     return (
-        <div className="App">
-            <Login/>
-        </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/login"
+                       element={<Login setUser={setUser}/>}/>
+
+                <Route path="/classroom" element={<MainWindow curUser={curUser}/>}/>
+
+                <Route path="/" element={<Navigate to={'/login'}/>}/>
+                <Route path="*" element={<ErrorPage/>}/>
+            </Routes>
+        </BrowserRouter>
     );
 
 }
-
-let count = 5;
 
 export default App;
