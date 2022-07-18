@@ -4,13 +4,12 @@ import imgHand from "./img/hand.png";
 import "./csses/RowTable.css"
 import ClassRoomService from "../API/ClassRoomService";
 
-const RowTable = ({item, statusCurUser, sendQueryToGetList}) => {
+const RowTable = ({item, statusCurUser, sendQueryToDeleteUser}) => {
 
     async function btnDeleteItem(e) {
         e.preventDefault()
         try {
-            await ClassRoomService.removeById(item.id)
-            sendQueryToGetList()
+            sendQueryToDeleteUser(item.id)
         } catch (e) {
             console.log(e)
         }

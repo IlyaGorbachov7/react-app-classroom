@@ -5,6 +5,7 @@ import ClassRoomService from "../API/ClassRoomService";
 import {useNavigate} from "react-router";
 import {Stomp} from "@stomp/stompjs";
 import SockJS from 'sockjs-client'
+import {WS_CROSS_ORIGIN} from "../API/RemoteServer";
 
 
 const MainWindow = ({curUser}) => {
@@ -18,15 +19,21 @@ const MainWindow = ({curUser}) => {
 
     function connection() {
         stompClient.current = Stomp.over(function () {
-            return new SockJS('http://localhost:8080/ws')
+            return new SockJS(WS_CROSS_ORIGIN)
         });
         stompClient.current.connect({}, onConnected);
     }
 
     const onConnected = () => {
         stompClient.current.subscribe('/topic/classroom', onSubscribe);
+        stompClient.current.subscribe('/user/' + curUser.id + '/delete', unSubscribe);
         setConnect(true);
         sendQueryToGetList();
+    }
+
+    // ---------------------------------------------------------------
+    function sendQueryToGetList() {
+        stompClient.current.send("/app/users")
     }
 
     const onSubscribe = (payload) => {
@@ -34,14 +41,29 @@ const MainWindow = ({curUser}) => {
         setUsers(payloadData);
     }
 
-    function disconnect() {
-        if (stompClient !== null) {
-            stompClient.current.disconnect();
+    // ---------------------------------------------------------------
+    function sendQueryToDeleteUser(uuid) {
+        console.log(uuid)
+        console.log(JSON.stringify(uuid))
+        stompClient.current.send("/app/private/delete", {}, JSON.stringify(uuid))
+    }
+
+    // The method is triggered when the class administrator sends the user a request to delete himself
+    const unSubscribe = (payload) => {
+        let id = JSON.parse(payload.body);
+        console.log(payload.body)
+        console.log(curUser)
+        if (id === curUser.id) {
+            console.log("Deleted continue ..>>>>>>>>>>>>>>>>.")
+            handlerLogout(null);
         }
     }
 
-    function sendQueryToGetList() {
-        stompClient.current.send("/app/users")
+    //----------------------------------------------------------------
+    function disconnect() {
+        if (stompClient.current !== null) {
+            stompClient.current.disconnect();
+        }
     }
 
     useEffect(() => {
@@ -51,19 +73,13 @@ const MainWindow = ({curUser}) => {
         connection();
     }, [])
 
-    useEffect(() => {
-        if (connect === true) {
-            sendQueryToGetList();
-        }
-    }, [connect])
-
     async function changeAction() {
         try {
             curUser.hand = curUser.hand === false
             let statusCode = await ClassRoomService.riseHand(curUser);
             console.log(statusCode)
             if (statusCode === 200) {// если все ОК
-                if (curUser.hand === true) {// if OK, then changed text inside html
+                if (curUser.hand !== true) {// if OK, then changed text inside html
                     document.getElementById("idActionHand").innerHTML = "Rise hand up"
                 } else document.getElementById("idActionHand").innerHTML = "Dawn hand"
 
@@ -81,14 +97,17 @@ const MainWindow = ({curUser}) => {
     }
 
     async function handlerLogout(e) {
-        e.preventDefault()
+        // This method used inside UnSubscribe() method
+        // So this if - is very important !
+        if (e !== null) e.preventDefault()
+
         try {
             await ClassRoomService.removeById(curUser.id)
             sendQueryToGetList();
             disconnect()
             navigate('/login');
-        } catch (e) {
-            console.log(e)
+        } catch (ex) {
+            console.log(ex)
         }
     }
 
@@ -136,7 +155,7 @@ const MainWindow = ({curUser}) => {
             <div className="table-style">
                 {users.map(user =>
                     <RowTable item={user} statusCurUser={curUser.status}
-                              loadUsers={sendQueryToGetList} key={user.id}/>
+                              sendQueryToDeleteUser={sendQueryToDeleteUser} key={user.id}/>
                 )}
             </div>
 
