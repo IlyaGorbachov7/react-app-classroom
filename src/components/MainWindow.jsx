@@ -17,6 +17,13 @@ const MainWindow = ({curUser}) => {
 
     const [users, setUsers] = useState([])
 
+    useEffect(() => {
+        if (connect === true) {
+            return;
+        }
+        connection();
+    }, [])
+
     function connection() {
         stompClient.current = Stomp.over(function () {
             return new SockJS(WS_CROSS_ORIGIN)
@@ -24,54 +31,66 @@ const MainWindow = ({curUser}) => {
         stompClient.current.connect({}, onConnected);
     }
 
-    const onConnected = () => {
-        stompClient.current.subscribe('/topic/classroom', onSubscribe);
+
+    const onConnected = async () => {
+        stompClient.current.subscribe('/topic/classroom/create', onCreatedUser);
+        stompClient.current.subscribe('/topic/classroom/delete', onDeletedUser);
+        stompClient.current.subscribe('/topic/classroom/update', onUpdatedUser);
         stompClient.current.subscribe('/user/' + curUser.id + '/delete', unSubscribe);
         setConnect(true);
-        sendQueryToGetList();
+        loadUsers();
+    }
+
+    async function loadUsers() {
+        let list = await ClassRoomService.getAll();
+        setUsers(list);
     }
 
     // ---------------------------------------------------------------
-    function sendQueryToGetList() {
-        stompClient.current.send("/app/users")
+
+    const onCreatedUser = (payload) => {
+        let user = JSON.parse(payload.body);
+        setUsers(prevState => [...prevState, user])
     }
 
-    const onSubscribe = (payload) => {
-        let payloadData = JSON.parse(payload.body);
-        setUsers(payloadData);
+    const onDeletedUser = (payload) => {
+        let uuid = JSON.parse(payload.body);
+        setUsers(prevState => {
+            return prevState.filter(user => user.id !== uuid)
+        })
+    }
+
+    const onUpdatedUser = (payload) => {
+        let userUpdate = JSON.parse(payload.body);
+        setUsers(prevState => {
+            let userExist = prevState.find(user => user.id === userUpdate.id)
+            if (userExist !== undefined) {
+                userExist.name = userUpdate.name;
+                userExist.hand = userUpdate.hand;
+            }
+            return [...prevState]
+        });
     }
 
     // ---------------------------------------------------------------
     function sendQueryToDeleteUser(uuid) {
-        console.log(uuid)
-        console.log(JSON.stringify(uuid))
         stompClient.current.send("/app/private/delete", {}, JSON.stringify(uuid))
     }
 
     // The method is triggered when the class administrator sends the user a request to delete himself
     const unSubscribe = (payload) => {
         let id = JSON.parse(payload.body);
-        console.log(payload.body)
-        console.log(curUser)
-        if (id === curUser.id) {
-            console.log("Deleted continue ..>>>>>>>>>>>>>>>>.")
-            handlerLogout(null);
-        }
+        console.log("Deleted continue ..>>>>>>>>>>>>>>>>.")
+        handlerLogout(null);
     }
 
-    //----------------------------------------------------------------
     function disconnect() {
         if (stompClient.current !== null) {
             stompClient.current.disconnect();
         }
-    }
 
-    useEffect(() => {
-        if (connect === true) {
-            return;
-        }
-        connection();
-    }, [])
+    }
+    //----------------------------------------------------------------
 
     async function changeAction() {
         try {
@@ -93,7 +112,6 @@ const MainWindow = ({curUser}) => {
     async function handlerRiseHand(e) {
         e.preventDefault()
         await changeAction()
-        sendQueryToGetList()
     }
 
     async function handlerLogout(e) {
@@ -103,7 +121,6 @@ const MainWindow = ({curUser}) => {
 
         try {
             await ClassRoomService.removeById(curUser.id)
-            sendQueryToGetList();
             disconnect()
             navigate('/login');
         } catch (ex) {
@@ -114,10 +131,10 @@ const MainWindow = ({curUser}) => {
     window.onclick = function (event) {
         if (!event.target.matches('.dropbtn')) {
 
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            var i;
+            let dropdowns = document.getElementsByClassName("dropdown-content");
+            let i;
             for (i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
+                let openDropdown = dropdowns[i];
                 if (openDropdown.classList.contains('show')) {
                     openDropdown.classList.remove('show');
                 }
@@ -125,42 +142,38 @@ const MainWindow = ({curUser}) => {
         }
     }
 
-    return (
-        <div>
-            <div className="container">
-                <div className="dropdown-action">
-                    <button onClick={(e) => {
-                        e.preventDefault()
-                        document.getElementById("myDropdownAction").classList.toggle("show");
-                    }} className="dropbtn">Actions
-                    </button>
-                    <div id="myDropdownAction" className="dropdown-content"
-                         onClick={handlerRiseHand}>
-                        <div id="idActionHand">Raise hand up</div>
-                    </div>
-                </div>
-
-                <div className="dropdown-user">
-                    <button onClick={(e) => {
-                        e.preventDefault()
-                        document.getElementById("myDropdownUser").classList.toggle("show");
-                    }} className="dropbtn">{curUser.name}</button>
-                    <div id="myDropdownUser" className="dropdown-content"
-                         onClick={handlerLogout}>
-                        <div id="idLogout">Logout</div>
-                    </div>
+    return (<div>
+        <div className="container">
+            <div className="dropdown-action">
+                <button onClick={(e) => {
+                    e.preventDefault()
+                    document.getElementById("myDropdownAction").classList.toggle("show");
+                }} className="dropbtn">Actions
+                </button>
+                <div id="myDropdownAction" className="dropdown-content"
+                     onClick={handlerRiseHand}>
+                    <div id="idActionHand">Raise hand up</div>
                 </div>
             </div>
 
-            <div className="table-style">
-                {users.map(user =>
-                    <RowTable item={user} statusCurUser={curUser.status}
-                              sendQueryToDeleteUser={sendQueryToDeleteUser} key={user.id}/>
-                )}
+            <div className="dropdown-user">
+                <button onClick={(e) => {
+                    e.preventDefault()
+                    document.getElementById("myDropdownUser").classList.toggle("show");
+                }} className="dropbtn">{curUser.name}</button>
+                <div id="myDropdownUser" className="dropdown-content"
+                     onClick={handlerLogout}>
+                    <div id="idLogout">Logout</div>
+                </div>
             </div>
-
         </div>
-    );
+
+        <div className="table-style">
+            {users.map(user => <RowTable item={user} statusCurUser={curUser.status}
+                                         sendQueryToDeleteUser={sendQueryToDeleteUser} key={user.id}/>)}
+        </div>
+
+    </div>);
 };
 
 export default MainWindow;
